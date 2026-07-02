@@ -1,45 +1,17 @@
-# ticktock — Timesheet Management App
+# ticktock — Timesheet Management App (Frontend)
 
-A SaaS-style timesheet management application built as a frontend technical assessment for TenTwenty.
-
----
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- npm / yarn / pnpm
-
-### Installation
-
-```bash
-cd task-assignment
-npm install
-```
-
-### Environment Setup
-
-A `.env.local` file is included with default development values:
-
-```env
-NEXTAUTH_SECRET=ticktock-super-secret-key-2024
-NEXTAUTH_URL=http://localhost:3000
-```
-
-> In production, replace `NEXTAUTH_SECRET` with a strong random value (e.g. `openssl rand -base64 32`).
-
-### Run the development server
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+A SaaS-style timesheet management application built as a TenTwenty Frontend Technical Assessment.
 
 ---
 
-## Login Credentials (Dummy Auth)
+## Live Demo
+
+> **Frontend:** https://ticktock-timesheet.vercel.app  
+> **Backend API:** https://ticktock-backend.up.railway.app
+
+---
+
+## Login Credentials
 
 | Field    | Value                  |
 |----------|------------------------|
@@ -48,34 +20,59 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## Features
+## Getting Started (Local Development)
 
-| Feature | Details |
-|---|---|
-| **Authentication** | next-auth v4 with Credentials provider; JWT session stored securely in an HTTP-only cookie |
-| **Login screen** | Split-screen layout matching Figma, with form validation via react-hook-form + Zod |
-| **Dashboard — Table View** | Paginated table of 99 seeded weeks; columns: Week #, Date, Status, Actions |
-| **Filters** | Filter by date range and/or status (All / Completed / Incomplete / Missing) |
-| **Pagination** | Configurable rows per page (5 / 10 / 25); smart ellipsis page numbers |
-| **Status badges** | Colour-coded: green = Completed, orange = Incomplete, red = Missing |
-| **Add Entry Modal** | react-hook-form + Zod validation; project & work-type dropdowns, textarea, hours stepper |
-| **Detail view** | Weekly list view grouped by day; progress bar showing hours vs. 40 h target |
-| **Internal API routes** | All data access goes through `/api/timesheets/*` — the client never calls an external API directly |
-| **Responsive** | Fully responsive from mobile to desktop |
+### Prerequisites
+- Node.js 18+
+- Backend API running on port 4000 (see `../backend/README.md`)
+
+### Installation
+
+```bash
+cd frontend
+npm install
+```
+
+### Environment Setup
+
+Create `.env.local` (or copy from `.env.example`):
+
+```env
+NEXTAUTH_SECRET=ticktock-super-secret-key-2024
+NEXTAUTH_URL=http://localhost:3000
+BACKEND_URL=http://localhost:4000
+INTERNAL_API_SECRET=ticktock-internal-api-secret-2024
+```
+
+### Run dev server
+
+```bash
+npm run dev        # → http://localhost:3000
+```
+
+### Run tests
+
+```bash
+npm test                # run all tests
+npm run test:watch      # watch mode
+npm run test:coverage   # with coverage report
+```
 
 ---
 
 ## Tech Stack
 
-| Library | Purpose |
-|---|---|
-| **Next.js 16** (App Router) | Framework |
-| **TypeScript** | Type safety |
-| **TailwindCSS v4** | Styling |
-| **next-auth v4** | Authentication |
-| **react-hook-form** | Form state management |
-| **Zod** | Schema validation |
-| **SWR** | Client-side data fetching with revalidation |
+| Library | Version | Purpose |
+|---|---|---|
+| **Next.js** | 16 | Framework (App Router) |
+| **TypeScript** | 5 | Type safety |
+| **TailwindCSS** | 4 | Styling |
+| **next-auth** | 4 | Authentication (Credentials + JWT) |
+| **react-hook-form** | 7 | Form state management |
+| **Zod** | 4 | Schema validation |
+| **SWR** | 2 | Client-side data fetching |
+| **Jest** | 29 | Unit testing |
+| **@testing-library/react** | — | Component testing |
 
 ---
 
@@ -85,35 +82,27 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 src/
 ├── app/
 │   ├── api/
-│   │   ├── auth/[...nextauth]/route.ts   # next-auth handler
-│   │   └── timesheets/
-│   │       ├── route.ts                  # GET list (paginated + filtered)
-│   │       └── [id]/
-│   │           ├── route.ts              # GET single timesheet
-│   │           └── entries/route.ts      # POST add entry
-│   ├── login/page.tsx                    # Login screen
-│   ├── dashboard/
-│   │   ├── page.tsx                      # Table view
-│   │   └── [id]/page.tsx                 # Detail / list view
-│   ├── layout.tsx                        # Root layout with AuthProvider
-│   └── page.tsx                          # Root redirect
+│   │   ├── auth/[...nextauth]/     next-auth handler
+│   │   └── timesheets/             BFF proxy routes → backend
+│   ├── login/                      Login page
+│   ├── dashboard/                  Table view + detail view
+│   ├── layout.tsx                  Root layout with AuthProvider
+│   └── page.tsx                    Root redirect
 ├── components/
 │   ├── auth/LoginForm.tsx
 │   ├── dashboard/
 │   │   ├── Header.tsx
-│   │   ├── TimesheetTable.tsx
+│   │   ├── TimesheetTable.tsx      Mobile cards + desktop table
 │   │   ├── StatusBadge.tsx
-│   │   ├── EntryModal.tsx
-│   │   ├── Filters.tsx
-│   │   └── Pagination.tsx
+│   │   ├── EntryModal.tsx          Add New Entry form
+│   │   ├── Filters.tsx             Date range + status filter
+│   │   └── Pagination.tsx          Smart pagination
 │   └── providers/AuthProvider.tsx
-├── hooks/
-│   └── useTimesheets.ts                  # SWR hooks + API helpers
+├── __tests__/                      Jest + Testing Library tests
+├── hooks/useTimesheets.ts           SWR hooks + API helpers
 ├── lib/
-│   ├── auth.ts                           # next-auth config
-│   ├── data.ts                           # In-memory data store + seed data
-│   └── validations.ts                    # Zod schemas
-├── middleware.ts                          # Route protection
+│   ├── auth.ts                     next-auth config
+│   └── validations.ts              Zod schemas
 └── types/
     ├── index.ts
     └── next-auth.d.ts
@@ -121,22 +110,48 @@ src/
 
 ---
 
+## Architecture: BFF Pattern
+
+```
+Browser  ──→  Next.js /api/*  ──→  Express Backend :4000
+              (validates session)   (validates x-internal-secret)
+```
+
+All client-side API calls go through internal Next.js API routes.
+The browser never calls the backend directly.
+
+---
+
+## Features
+
+- **Authentication** — next-auth v4 with Credentials provider; JWT session in HTTP-only cookie
+- **Dashboard** — paginated table (5/10/25 per page) with Week #, Date, Status, Actions
+- **Filters** — filter by date range and status
+- **Add Entry Modal** — react-hook-form + Zod validation, hours stepper, project/work-type dropdowns
+- **Detail View** — weekly breakdown by day with progress bar
+- **Responsive** — mobile card layout, stacked filters, simplified pagination on phones
+- **19 unit/component tests** — StatusBadge, Pagination, TimesheetTable, Filters
+
+---
+
 ## Assumptions & Notes
 
-- **Data persistence**: The timesheet store is in-memory (module-level variable). Data resets on server restart. In production this would be backed by a database.
-- **Authentication**: Dummy credentials are hardcoded. In production, use a proper user table with hashed passwords.
-- **Timesheet seed data**: 99 weeks are seeded from 2024-01-01 following a repeating pattern (COMPLETED → COMPLETED → INCOMPLETE → COMPLETED → MISSING).
-- **Status logic**: Derived from total hours — ≥ 40 = Completed, 1–39 = Incomplete, 0 = Missing.
-- **"View" action**: Navigates to the detail page for a completed timesheet. "Update" / "Create" open the Add Entry modal.
-- **No external API**: The assessment referenced "supplied APIs" but none were provided, so all data is served from internal Next.js API routes.
+- **Data persistence**: In-memory store (resets on server restart). Production would use a database.
+- **Auth**: Hardcoded dummy credentials. Production would use a real user table with hashed passwords.
+- **99 weeks seeded**: Starting 2024-01-01, status pattern: COMPLETED → COMPLETED → INCOMPLETE → COMPLETED → MISSING.
+- **No external API provided**: Assessment mentioned "supplied APIs" but none were included, so internal API routes serve mock data from the Express backend.
 
 ---
 
 ## Time Spent
 
-~4 hours total:
-- Project setup & architecture: 30 min
-- Authentication (next-auth): 30 min
-- API routes + data layer: 45 min
-- UI components (table, modal, pagination, filters): 1.5 h
-- Detail view + responsive polish: 45 min
+| Task | Time |
+|---|---|
+| Project setup + architecture | 30 min |
+| Authentication (next-auth) | 30 min |
+| Backend (Express + TypeScript) | 45 min |
+| API routes + BFF layer | 30 min |
+| UI components (table, modal, pagination) | 1h 30 min |
+| Detail view + responsive polish | 45 min |
+| Tests | 30 min |
+| **Total** | **~5 hours** |

@@ -20,6 +20,14 @@ function formatDateRange(startDate: string, endDate: string): string {
   return `${fmt(startDate)} – ${fmt(endDate)}`;
 }
 
+function SortArrow() {
+  return (
+    <svg className="inline-block ml-1 h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+    </svg>
+  );
+}
+
 interface ActionProps {
   timesheet: Timesheet;
   onOpenModal: (id: string) => void;
@@ -28,20 +36,29 @@ interface ActionProps {
 function RowAction({ timesheet, onOpenModal }: ActionProps) {
   if (timesheet.status === 'COMPLETED') {
     return (
-      <Link href={`/dashboard/${timesheet.id}`} className="text-blue-600 hover:underline font-medium text-sm">
+      <Link
+        href={`/dashboard/${timesheet.id}`}
+        className="text-blue-600 hover:text-blue-800 font-medium text-sm transition"
+      >
         View
       </Link>
     );
   }
   if (timesheet.status === 'INCOMPLETE') {
     return (
-      <button onClick={() => onOpenModal(timesheet.id)} className="text-blue-600 hover:underline font-medium text-sm">
+      <button
+        onClick={() => onOpenModal(timesheet.id)}
+        className="text-blue-600 hover:text-blue-800 font-medium text-sm transition"
+      >
         Update
       </button>
     );
   }
   return (
-    <button onClick={() => onOpenModal(timesheet.id)} className="text-blue-600 hover:underline font-medium text-sm">
+    <button
+      onClick={() => onOpenModal(timesheet.id)}
+      className="text-blue-600 hover:text-blue-800 font-medium text-sm transition"
+    >
       Create
     </button>
   );
@@ -63,7 +80,7 @@ export default function TimesheetTable({ timesheets, onOpenModal }: Props) {
 
   return (
     <>
-      {/* ── Mobile card view (< sm) ───────────────────────────────────── */}
+      {/* Mobile card view (< sm) */}
       <div className="sm:hidden space-y-3">
         {timesheets.map((ts) => (
           <div
@@ -86,21 +103,21 @@ export default function TimesheetTable({ timesheets, onOpenModal }: Props) {
         ))}
       </div>
 
-      {/* ── Desktop table view (sm+) ──────────────────────────────────── */}
+      {/* Desktop table view (sm+) */}
       <div className="hidden sm:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200 text-left">
-              <th className="pb-3 pr-4 font-semibold text-gray-500 uppercase text-xs tracking-wide w-20">
-                Week #
+              <th className="pb-3 pr-4 font-semibold text-gray-500 uppercase text-xs tracking-wider w-20 select-none">
+                Week # <SortArrow />
               </th>
-              <th className="pb-3 pr-4 font-semibold text-gray-500 uppercase text-xs tracking-wide">
-                Date
+              <th className="pb-3 pr-4 font-semibold text-gray-500 uppercase text-xs tracking-wider select-none">
+                Date <SortArrow />
               </th>
-              <th className="pb-3 pr-4 font-semibold text-gray-500 uppercase text-xs tracking-wide w-36">
-                Status
+              <th className="pb-3 pr-4 font-semibold text-gray-500 uppercase text-xs tracking-wider w-36 select-none">
+                Status <SortArrow />
               </th>
-              <th className="pb-3 font-semibold text-gray-500 uppercase text-xs tracking-wide text-right w-28">
+              <th className="pb-3 font-semibold text-gray-500 uppercase text-xs tracking-wider text-right w-28">
                 Actions
               </th>
             </tr>
@@ -109,9 +126,7 @@ export default function TimesheetTable({ timesheets, onOpenModal }: Props) {
             {timesheets.map((ts) => (
               <tr key={ts.id} className="hover:bg-gray-50 transition">
                 <td className="py-4 pr-4 font-medium text-gray-800">{ts.weekNumber}</td>
-                <td className="py-4 pr-4 text-gray-600">
-                  {formatDateRange(ts.startDate, ts.endDate)}
-                </td>
+                <td className="py-4 pr-4 text-gray-600">{formatDateRange(ts.startDate, ts.endDate)}</td>
                 <td className="py-4 pr-4">
                   <StatusBadge status={ts.status} />
                 </td>

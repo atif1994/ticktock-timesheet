@@ -10,17 +10,14 @@ import { useTimesheets } from '@/hooks/useTimesheets';
 import { TimesheetStatus } from '@/types';
 
 export default function DashboardPage() {
-  // Filter / pagination state
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
   const [statusFilter, setStatusFilter] = useState<TimesheetStatus | 'all'>('all');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
-
-  // Modal state
   const [modalTimesheetId, setModalTimesheetId] = useState<string | null>(null);
 
-  const { data, isLoading, mutate } = useTimesheets({
+  const { data, isLoading, error, mutate } = useTimesheets({
     page,
     perPage,
     status: statusFilter,
@@ -69,8 +66,19 @@ export default function DashboardPage() {
             />
 
             {isLoading ? (
-              <div className="py-16 text-center text-gray-400 text-sm">
-                Loading…
+              <div className="py-16 text-center">
+                <div className="inline-block h-7 w-7 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+                <p className="mt-2 text-sm text-gray-400">Loading timesheets…</p>
+              </div>
+            ) : error ? (
+              <div className="py-12 text-center">
+                <p className="text-sm text-red-500">Failed to load timesheets. Please ensure the backend is running.</p>
+                <button
+                  onClick={() => mutate()}
+                  className="mt-3 text-sm text-blue-600 hover:underline"
+                >
+                  Try again
+                </button>
               </div>
             ) : (
               <>
@@ -79,7 +87,7 @@ export default function DashboardPage() {
                   onOpenModal={setModalTimesheetId}
                 />
 
-                {data && data.totalPages > 1 && (
+                {data && data.totalPages > 0 && (
                   <Pagination
                     page={page}
                     totalPages={data.totalPages}
@@ -91,23 +99,15 @@ export default function DashboardPage() {
               </>
             )}
           </div>
-
-          {/* Legend */}
-          <div className="mt-4 flex flex-wrap gap-4 text-xs text-gray-500 px-1">
-            <span>
-              <strong className="text-green-600">Completed</strong> = 40 hours logged
-            </span>
-            <span>
-              <strong className="text-orange-500">Incomplete</strong> = less than 40 hours
-            </span>
-            <span>
-              <strong className="text-red-400">Missing</strong> = no hours added
-            </span>
-          </div>
         </div>
       </main>
 
-      {/* Add Entry Modal */}
+      {/* Footer */}
+      <footer className="text-center py-4 text-xs text-gray-400">
+        © 2024 tentwenty. All rights reserved.
+      </footer>
+
+      {/* Add/Edit Entry Modal */}
       {modalTimesheetId && (
         <EntryModal
           timesheetId={modalTimesheetId}

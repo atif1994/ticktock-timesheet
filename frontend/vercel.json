@@ -1,8 +1,5 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "framework": "nextjs",
-  "env": {
-    "NEXTAUTH_URL": "https://ticktock-timesheet.vercel.app"
-  }
+  "framework": "nextjs"
 }
